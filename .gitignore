@@ -1,0 +1,245 @@
+# =============================================================================
+# Review before pushing to a public repository
+# =============================================================================
+# 1. FONTS: api/fontlib/ contains flat .ttf/.woff2 files generated from
+#    /System/Library/Fonts/Supplemental on macOS (Arial, Times New Roman,
+#    Courier New, Georgia, Verdana, Tahoma, Trebuchet MS, Comic Sans, Impact).
+#    These are Microsoft/Apple proprietary fonts and NOT redistributable.
+#    They are excluded below. Cross-platform users should run
+#    `api/scripts/build_fontlib.py` after cloning to regenerate from sources.
+#
+#    Vendored fonts (safe to commit):
+#      - api/fontlib/vendor/liberation/  (SIL OFL 1.1, freely redistributable)
+#      - api/fontlib/vendor/urw/         (AGPL3 + font-embedding exception;
+#                                         see LICENSE; legal review recommended
+#                                         before serving as WOFF2 commercially)
+#
+# 2. STORAGE: storage/ holds per-document uploads (user PDFs + extracted fonts
+#    + saved revisions). 300MB+ of runtime data. Never commit.
+#
+# 3. PII: any PDFs at the repo root may contain personal data
+#    (e.g., the receipt fixture). Excluded below.
+#
+# 4. CLAUDE: .claude/ holds local Claude Code config and may include personal
+#    agent definitions. Excluded by default; remove the rule below if you
+#    want to share agent configuration with collaborators.
+# =============================================================================
+
+
+# =============================================================================
+# Python
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+.dmypy.json
+dmypy.json
+.tox/
+.nox/
+.hypothesis/
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+
+# =============================================================================
+# Node / JavaScript / TypeScript
+# =============================================================================
+node_modules/
+.pnp.*
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Build output
+dist/
+dist-ssr/
+out/
+.next/
+.nuxt/
+.svelte-kit/
+.turbo/
+.parcel-cache/
+.vite/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Local artifacts
+*.local
+
+
+# =============================================================================
+# Environment files
+# =============================================================================
+.env
+.env.*
+!.env.example
+!.env.sample
+
+
+# =============================================================================
+# Editor / IDE
+# =============================================================================
+
+# JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code (keep extensions.json so contributors get recommended extensions)
+.vscode/*
+!.vscode/extensions.json
+
+# Sublime
+*.sublime-workspace
+*.sublime-project
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Vim / Emacs / temp
+*.swp
+*.swo
+*.swn
+*~
+.history/
+
+# Visual Studio / .NET noise occasionally seen on Node projects
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+
+# =============================================================================
+# Operating system noise
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+
+# =============================================================================
+# Temporary files
+# =============================================================================
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+*.orig
+*.rej
+
+
+# =============================================================================
+# Project-specific
+# =============================================================================
+
+# Runtime user uploads + per-document extracted data (~300MB).
+# This directory is created and managed by the FastAPI backend at runtime.
+storage/
+
+# PDFs at the repo root are typically test fixtures with personal data.
+# If you have a sanitized fixture you want to commit, name it sample*.pdf
+# and the unignore rule below will let it through.
+/*.pdf
+!/sample*.pdf
+
+# Local Claude Code configuration (agent definitions, hooks, etc.).
+# Remove this line if you want to share agent configuration with the team.
+.claude/
+
+# Generated fontlib outputs derived from macOS system fonts.
+# These are produced by `api/scripts/build_fontlib.py` and contain
+# Microsoft-licensed fonts that are NOT redistributable. Regenerate after
+# cloning. The vendor/ subdirectory IS committed and is safe.
+api/fontlib/*.ttf
+api/fontlib/*.woff2
+api/fontlib/index.json
+!api/fontlib/INTER-OFL.txt
+!api/fontlib/vendor/
+# Inter is SIL OFL 1.1 — safe to commit even though it lives at top level.
+!api/fontlib/inter-*.ttf
+!api/fontlib/inter-*.woff2
+
+# Local plan / scratch notes (uncomment if you don't want PLAN.md tracked)
+# PLAN.md
