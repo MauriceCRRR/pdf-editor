@@ -1,0 +1,13 @@
+[project]
+name = "pdf-editor-api"
+version = "0.1.0"
+description = "FastAPI backend for the PDF editor (Milestone 1)."
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = []
