@@ -49,59 +49,10 @@ The bundled `api/fontlib/vendor/` covers Linux / Windows out of the box. On macO
 cd api && .venv/bin/python scripts/build_fontlib.py
 ```
 
-## Layout
-
-```
-api/          FastAPI backend (Python)
-api/app/      Application code — routes, models, extraction, save, fonts
-api/fontlib/  Font masters (Liberation OFL, URW AGPL3, Inter OFL)
-api/scripts/  Build / utility scripts
-web/          Vite + React + TypeScript frontend
-storage/      Per-document uploads + extracted data (runtime, gitignored)
-```
-
-## API
-
-| Method | Path | Notes |
-|---|---|---|
-| GET | `/api/health` | liveness |
-| POST | `/api/upload` | multipart PDF ≤ 50 MB |
-| POST | `/api/upload/streaming` | starts a job, returns `{jobId, documentId}` |
-| GET | `/api/upload/{jobId}/events` | SSE progress stream |
-| GET | `/api/doc/{id}` | document metadata |
-| GET / HEAD | `/api/doc/{id}/pdf` | raw PDF bytes |
-| GET / HEAD | `/api/doc/{id}/fonts/{filename}` | WOFF2 / TTF / OTF |
-| GET / HEAD | `/api/doc/{id}/images/{filename}` | PNG / JPEG / GIF / WEBP |
-| POST | `/api/doc/{id}/images` | upload image, ≤ 25 MB |
-| POST | `/api/doc/{id}/save` | apply edits + insertions; returns `{document, warnings}` |
-| POST | `/api/doc/{id}/pages` | add blank page |
-| POST | `/api/doc/{id}/pages/reorder` | reorder pages |
-| DELETE | `/api/doc/{id}/pages/{index}` | delete page |
-
 ## Stack
 
 - **Frontend**: Vite, React 19, TypeScript, Tailwind, Zustand, pdfjs-dist 5, lucide-react
 - **Backend**: FastAPI, uvicorn, PyMuPDF, fontTools, filelock, aiofiles, pydantic 2
-
-## Smoke test
-
-```bash
-# Generate a 5-page blank PDF
-cd api && .venv/bin/python -c "
-import pymupdf
-doc = pymupdf.open()
-for _ in range(5):
-    doc.new_page(width=612, height=792)
-doc.save('/tmp/t.pdf')
-"
-
-# Upload through the Vite proxy
-curl -X POST -F "file=@/tmp/t.pdf" http://localhost:5173/api/upload
-```
-
-## Known limitations
-
-See [KNOWN_LIMITATIONS.md](./KNOWN_LIMITATIONS.md) for an honest list of what works, what's partial, and what's deferred.
 
 ## License
 
