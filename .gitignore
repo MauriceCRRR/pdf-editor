@@ -241,5 +241,5 @@ api/fontlib/index.json
 !api/fontlib/inter-*.ttf
 !api/fontlib/inter-*.woff2
 
-# Local plan / scratch notes (uncomment if you don't want PLAN.md tracked)
-# PLAN.md
+# Local plan / scratch notes
+PLAN.md
