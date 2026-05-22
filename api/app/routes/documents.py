@@ -10,7 +10,7 @@ import pymupdf
 from fastapi import APIRouter, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 
-from app import storage
+from app import fontlib, storage
 from app.models import DocumentMetadata, ImageUploadResponse
 
 logger = logging.getLogger(__name__)
@@ -135,6 +135,36 @@ async def get_document_font(document_id: str, filename: str) -> FileResponse:
         path=font_file,
         media_type=media_type,
         headers={"Cache-Control": cache_value},
+    )
+
+
+@router.api_route("/fontlib/{filename}", methods=["GET", "HEAD"])
+async def get_fontlib_file(filename: str) -> FileResponse:
+    if not _FILENAME_RE.match(filename):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid font filename.",
+        )
+    root = fontlib.FONTLIB_DIR.resolve()
+    target = (root / filename).resolve()
+    try:
+        target.relative_to(root)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid font filename.",
+        ) from exc
+    if not target.exists() or not target.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Font not found.",
+        )
+    ext = target.suffix.lower()
+    media_type = _FONT_CONTENT_TYPES.get(ext, "application/octet-stream")
+    return FileResponse(
+        path=target,
+        media_type=media_type,
+        headers={"Cache-Control": "public, max-age=31536000, immutable"},
     )
 
 

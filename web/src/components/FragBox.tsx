@@ -270,7 +270,7 @@ export function FragBox({
   );
 
   const borderClass = isActive
-    ? "border-2 border-solid border-[#4a90e2]"
+    ? "outline outline-2 outline-[#4a90e2]"
     : hasPendingEdit
       ? "border border-solid border-amber-500"
       : isFormField
@@ -304,6 +304,14 @@ export function FragBox({
   const writingMode = (fragment.writingMode ?? "horizontal-tb") as React.CSSProperties["writingMode"];
   const isVertical = (fragment.writingMode ?? "horizontal-tb") !== "horizontal-tb";
 
+  // Match the CSS line box to PyMuPDF's reported bbox (= font's intrinsic
+  // ascent + descent in em units). With line-height: 1 the baseline sat at
+  // (size + ascent − descent) / 2 from the top, ~1–2 px above PyMuPDF's
+  // baseline (ascent × size), which made the text jump up on activation.
+  const naturalSize = fragment.spans[0]?.size ?? effective.size;
+  const naturalHeightPt = fragment.bbox[3] - fragment.bbox[1];
+  const lineHeightRatio = naturalSize > 0 ? naturalHeightPt / naturalSize : 1.2;
+
   const fontStyle: React.CSSProperties = {
     fontFamily,
     fontSize: `${effective.size * cssScale}px`,
@@ -312,7 +320,7 @@ export function FragBox({
     fontStyle: effective.italic ? "italic" : "normal",
     textDecoration: textDecoration(effective.underline, effective.strikethrough),
     textAlign: effective.align,
-    lineHeight: 1,
+    lineHeight: lineHeightRatio,
     whiteSpace: "pre",
     transform: rotationTransform,
     transformOrigin: "top left",
@@ -406,7 +414,7 @@ export function FragBox({
       ref={containerRef}
       data-fragment-id={fragment.id}
       style={baseStyle}
-      className={baseClass}
+      className={`${baseClass} group`}
       onPointerDown={onDragPointerDown}
       onPointerMove={onDragPointerMove}
       onPointerUp={onDragPointerUp}
@@ -506,9 +514,22 @@ export function FragBox({
               store.markFragmentExpanded(fragment.id, !inSubset);
             }
           }
+          // Auto-grow the bbox horizontally when typed text exceeds the
+          // original width. Without this, contentEditable's overflow:hidden
+          // scrolls to keep the caret in view, hiding the start of the text.
+          const overflowPx = el.scrollWidth - el.clientWidth;
+          let nextBBox: [number, number, number, number] | undefined;
+          if (overflowPx > 0.5) {
+            const [x0, y0, x1, y1] = effective.newBBox;
+            const grownX1 = Math.min(page.widthPt, x1 + overflowPx / cssScale);
+            if (grownX1 > x1 + 0.01) {
+              nextBBox = [x0, y0, grownX1, y1];
+            }
+          }
           store.updateEdit(fragment.id, {
             newText,
             newSpans: newSpansOut,
+            ...(nextBBox ? { newBBox: nextBBox } : {}),
           });
         }}
         onKeyDown={(e) => {
@@ -572,12 +593,14 @@ export function FragBox({
           cursor: "text",
         }}
       />
-      <ResizeHandles
-        fragId={fragment.id}
-        bbox={effective.newBBox}
-        cssScale={cssScale}
-        page={page}
-      />
+      <div className="opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+        <ResizeHandles
+          fragId={fragment.id}
+          bbox={effective.newBBox}
+          cssScale={cssScale}
+          page={page}
+        />
+      </div>
     </div>
   );
 }

@@ -78,7 +78,7 @@ export function InsertionImage({ insertion, cssScale, page, isActive, documentId
   );
 
   const borderClass = isActive
-    ? "border-2 border-solid border-[#4a90e2]"
+    ? "border border-solid border-[#4a90e2]"
     : "border border-dotted border-[#4a90e2] hover:border-solid";
 
   const url = getImageUrl(documentId, insertion.imageRef);
@@ -86,7 +86,7 @@ export function InsertionImage({ insertion, cssScale, page, isActive, documentId
   return (
     <div
       data-insertion-id={insertion.id}
-      className={["absolute box-border overflow-hidden", borderClass].join(" ")}
+      className={["absolute box-border overflow-hidden group", borderClass].join(" ")}
       style={{
         left: `${rect.left}px`,
         top: `${rect.top}px`,
@@ -114,12 +114,14 @@ export function InsertionImage({ insertion, cssScale, page, isActive, documentId
         }}
       />
       {isActive ? (
-        <InsertionResizeHandles
-          insertionId={insertion.id}
-          bbox={insertion.bbox}
-          cssScale={cssScale}
-          page={page}
-        />
+        <div className="opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+          <InsertionResizeHandles
+            insertionId={insertion.id}
+            bbox={insertion.bbox}
+            cssScale={cssScale}
+            page={page}
+          />
+        </div>
       ) : null}
     </div>
   );

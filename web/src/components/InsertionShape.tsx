@@ -76,7 +76,7 @@ export function InsertionShape({ insertion, cssScale, page, isActive }: Props) {
   );
 
   const borderClass = isActive
-    ? "border-2 border-solid border-[#4a90e2]"
+    ? "border border-solid border-[#4a90e2]"
     : "border border-dotted border-[#4a90e2] hover:border-solid";
 
   const wrapperStyle: React.CSSProperties = {
@@ -94,7 +94,7 @@ export function InsertionShape({ insertion, cssScale, page, isActive }: Props) {
   return (
     <div
       data-insertion-id={insertion.id}
-      className={["absolute box-border", borderClass].join(" ")}
+      className={["absolute box-border group", borderClass].join(" ")}
       style={wrapperStyle}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -131,12 +131,14 @@ export function InsertionShape({ insertion, cssScale, page, isActive }: Props) {
         )}
       </svg>
       {isActive ? (
-        <InsertionResizeHandles
-          insertionId={insertion.id}
-          bbox={insertion.bbox}
-          cssScale={cssScale}
-          page={page}
-        />
+        <div className="opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+          <InsertionResizeHandles
+            insertionId={insertion.id}
+            bbox={insertion.bbox}
+            cssScale={cssScale}
+            page={page}
+          />
+        </div>
       ) : null}
     </div>
   );

@@ -137,10 +137,11 @@ export function fontFamilyForSpan(
   if (useMaster) {
     if (masterFamily) chain.push(`"${masterFamily}"`);
     if (subsetFamily) chain.push(`"${subsetFamily}"`);
+    chain.push(fallback);
   } else {
     if (subsetFamily) chain.push(`"${subsetFamily}"`);
+    chain.push(fallback);
     if (masterFamily) chain.push(`"${masterFamily}"`);
   }
-  chain.push(fallback);
   return chain.join(", ");
 }

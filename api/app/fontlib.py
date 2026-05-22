@@ -25,6 +25,7 @@ _SUBSET_RE = re.compile(r"^([A-Z]{6})\+(.+)$")
 _FAMILY_KEYWORDS: list[tuple[tuple[str, ...], str]] = [
     (("zapfdingbats", "dingbats", "itcdingbats"), "Dingbats"),
     (("standardsymbol", "symbolps", "symbol"), "Symbol"),
+    (("inter",), "Inter"),
     (("trebuchet",), "Trebuchet MS"),
     (("comic",), "Comic Sans MS"),
     (("impact",), "Impact"),
@@ -205,8 +206,14 @@ def find_master(
                 return picked, "familyKeyword"
 
     if panose and len(panose) >= 10 and not all(v == 0 for v in panose):
+        # Pictorial/symbol families have wildcard PANOSE bytes that make them
+        # spuriously "close" to Latin text fonts under the distance metric.
+        # Route them in via the explicit family keywords above instead.
+        excluded_families = {"Dingbats", "Symbol"}
         best: tuple[dict[str, Any], float] | None = None
         for entry in lib:
+            if entry.get("familyName") in excluded_families:
+                continue
             if not _matches_style(entry, bold, italic):
                 continue
             entry_panose = entry.get("panose") or []

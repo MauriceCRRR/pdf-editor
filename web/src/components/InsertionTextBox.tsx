@@ -129,7 +129,7 @@ export function InsertionTextBox({ insertion, cssScale, page, isActive }: Props)
   );
 
   const borderClass = isActive
-    ? "border-2 border-solid border-[#4a90e2]"
+    ? "border border-solid border-[#4a90e2]"
     : "border border-dotted border-[#4a90e2] hover:border-solid";
 
   const baseClass = ["absolute box-border", borderClass, !isActive ? "cursor-text" : ""]
@@ -186,7 +186,7 @@ export function InsertionTextBox({ insertion, cssScale, page, isActive }: Props)
       ref={containerRef}
       data-insertion-id={insertion.id}
       style={baseStyle}
-      className={baseClass}
+      className={`${baseClass} group`}
       onPointerDown={onDragPointerDown}
       onPointerMove={onDragPointerMove}
       onPointerUp={onDragPointerUp}
@@ -243,12 +243,14 @@ export function InsertionTextBox({ insertion, cssScale, page, isActive }: Props)
           cursor: "text",
         }}
       />
-      <InsertionResizeHandles
-        insertionId={insertion.id}
-        bbox={insertion.bbox}
-        cssScale={cssScale}
-        page={page}
-      />
+      <div className="opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto">
+        <InsertionResizeHandles
+          insertionId={insertion.id}
+          bbox={insertion.bbox}
+          cssScale={cssScale}
+          page={page}
+        />
+      </div>
     </div>
   );
 }

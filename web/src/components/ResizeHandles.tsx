@@ -10,21 +10,24 @@ type HandleDef = {
   style: React.CSSProperties;
 };
 
-const HANDLE_SIZE = 10;
+const HANDLE_SIZE = 8;
 const MIN_WIDTH_PT = 10;
 const MIN_HEIGHT_PT = 4;
 
-const HALF = HANDLE_SIZE / 2;
+// Handles sit fully outside the bbox so they don't cover glyph strokes on
+// short fragments (e.g. 13 px tall lines), which made the text look fragmented
+// and "less bold" than the underlying rasterized PDF.
+const OFFSET = HANDLE_SIZE;
 
 const HANDLES: HandleDef[] = [
-  { id: "nw", cursor: "nwse-resize", style: { left: -HALF, top: -HALF } },
-  { id: "n", cursor: "ns-resize", style: { left: "50%", top: -HALF, transform: "translateX(-50%)" } },
-  { id: "ne", cursor: "nesw-resize", style: { right: -HALF, top: -HALF } },
-  { id: "e", cursor: "ew-resize", style: { right: -HALF, top: "50%", transform: "translateY(-50%)" } },
-  { id: "se", cursor: "nwse-resize", style: { right: -HALF, bottom: -HALF } },
-  { id: "s", cursor: "ns-resize", style: { left: "50%", bottom: -HALF, transform: "translateX(-50%)" } },
-  { id: "sw", cursor: "nesw-resize", style: { left: -HALF, bottom: -HALF } },
-  { id: "w", cursor: "ew-resize", style: { left: -HALF, top: "50%", transform: "translateY(-50%)" } },
+  { id: "nw", cursor: "nwse-resize", style: { left: -OFFSET, top: -OFFSET } },
+  { id: "n", cursor: "ns-resize", style: { left: "50%", top: -OFFSET, transform: "translateX(-50%)" } },
+  { id: "ne", cursor: "nesw-resize", style: { right: -OFFSET, top: -OFFSET } },
+  { id: "e", cursor: "ew-resize", style: { right: -OFFSET, top: "50%", transform: "translateY(-50%)" } },
+  { id: "se", cursor: "nwse-resize", style: { right: -OFFSET, bottom: -OFFSET } },
+  { id: "s", cursor: "ns-resize", style: { left: "50%", bottom: -OFFSET, transform: "translateX(-50%)" } },
+  { id: "sw", cursor: "nesw-resize", style: { left: -OFFSET, bottom: -OFFSET } },
+  { id: "w", cursor: "ew-resize", style: { left: -OFFSET, top: "50%", transform: "translateY(-50%)" } },
 ];
 
 type DragState = {
